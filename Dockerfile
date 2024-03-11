@@ -1,3 +1,5 @@
+# The Dockerfile is used to build our image, which contains a mini Linux Operating System with all the dependencies needed to run our project.
+
 # FROM: the base image, versions can be found on docker website
 # maintainer is the maintainer of this projet, could sepcify your name or website
 FROM python:3.9-alpine3.13

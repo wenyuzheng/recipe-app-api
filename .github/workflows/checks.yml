@@ -1,0 +1,23 @@
+---
+# the name appears in Github actions
+name: Checks
+
+# thsi is the trigger, i.e. we want this particular Github action to run on any push of changes 
+on: [push]
+
+jobs:
+  test-lint: # this is the id of this job
+    name: Test and Lint
+    runs-on: ubuntu-20.04 # this is one of the runner that is available on Github actions website, docker-compose is already installed in ubuntu
+    steps: # steps are executed in order
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1 # actions can be premade by Github and reused, or can create your own
+        with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+      - name: Checkout # this step checks our code out inside the GIthub actions job because by default the code is not checked out inside the job as certain jobs don't require the code to perform the jobs, but in this case we need the code to run liniting tests in the following steps
+        uses: actions/checkout@v2
+      - name: Test
+        run: docker-compose run --rm app sh -c "python manage.py test"
+      - name: Lint 
+        run: docker-compose run --rm app sh -c "flake8"
