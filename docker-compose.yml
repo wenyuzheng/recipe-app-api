@@ -1,0 +1,20 @@
+# Docker compose version
+version: "3.9"
+
+# app is the name of our services
+# build block: build the docker file from the current directory
+# port block: maps p0ort 8000 from local machine to port 8000 inside the Docker container, this is how to access network when connecting to server
+# volumes block: maps app directory from our system into app directory in Docker container, this is to sync the updated code into the container so no rebuild container is needed
+# command block: this can be override, otherwise this is the default command to use in container
+services: 
+  app:
+    build:
+      context: .
+      args:
+        - DEV=true
+    ports:
+      - "8000:8000"
+    volumes: 
+      - ./app:/app
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000"
