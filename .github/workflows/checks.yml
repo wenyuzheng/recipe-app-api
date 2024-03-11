@@ -13,8 +13,8 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v1 # actions can be premade by Github and reused, or can create your own
         with:
-        username: ${{ secrets.DOCKER_USER }}
-        password: ${{ secrets.DOCKER_TOKEN }}
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_TOKEN }}
       - name: Checkout # this step checks our code out inside the GIthub actions job because by default the code is not checked out inside the job as certain jobs don't require the code to perform the jobs, but in this case we need the code to run liniting tests in the following steps
         uses: actions/checkout@v2
       - name: Test
