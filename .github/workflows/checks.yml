@@ -18,6 +18,6 @@ jobs:
       - name: Checkout # this step checks our code out inside the Github actions job because by default the code is not checked out inside the job as certain jobs don't require the code to perform the jobs, but in this case we need the code to run liniting tests in the following steps
         uses: actions/checkout@v2
       - name: Test
-        run: docker-compose run --rm app sh -c "python managge.py wait_for_db && python manage.py test"
+        run: docker-compose run --rm app sh -c "python manage.py wait_for_db && python manage.py test"
       - name: Lint
         run: docker-compose run --rm app sh -c "flake8"
