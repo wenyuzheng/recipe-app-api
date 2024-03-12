@@ -18,3 +18,23 @@ services:
       - ./app:/app
     command: >
       sh -c "python manage.py runserver 0.0.0.0:8000"
+    environment: # this section should match the value in the db section
+      - DB_HOST=db
+      - DB_NAME=devdb
+      - DB_USER=devuser
+      - DB_PASS=changeme
+    depends_on: # this tells docker compose that the app service depends on the db service so it will try to wait for the db service to start before starting the app service, and if db service fails then app service should fail too.
+      - db
+
+  db:
+    image: postgres:13-alpine # can be found on dockerhub website
+    volumes:
+      - dev-db-data:/var/lib/postgresql/data
+    environment: # This block is to set the initial database config for new db service
+      - POSTGRES_DB=devdb
+      - POSTGRES_USER=devuser
+      - POSTGRES_PASSWORD=changeme
+
+
+volumes: 
+  dev-db-data: # no need to add anything here after colon because docker compose will handle automatically and store it in the default location

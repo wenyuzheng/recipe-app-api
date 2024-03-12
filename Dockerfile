@@ -20,19 +20,26 @@ EXPOSE 8000
 # Defines a build argument called DEV and sets the default value to false, which is then override iside docker-compose.yml file
 ARG DEV=false
 # This is a single RUN block, although could add RUN command in front of each line, but then each command will create a new image layer. Therefore we want to avoid multiple commands to keep the image as lightweight as possible so that image building is more efficient, and thus break each line using the syntax `&& \`.
-# Line 1: creates a virtual env which is a safe guard to reduce the risk of python dependencies on the actual base image conflicting with the dependencies of the project.
-# Line 2: upgrade the python package manager pip inside the virtual env (as we specifed the full path to the pip inside the venv)
-# Line 3: install the list of requirements inside vitual env
-# Line 4: if dev is true, install the dev requirements list in venv
-# Line 7: remove the tmp directory becasue we don't want extra dependecies => keep the docer image lightweight
-# Line 8: add a new user to docker image to avoid using the root user, no-create-home is bot to create a home directory => lightweight, django-user is the name of the user
+# venv line: creates a virtual env which is a safe guard to reduce the risk of python dependencies on the actual base image conflicting with the dependencies of the project.
+# upgrade pip line: upgrade the python package manager pip inside the virtual env (as we specifed the full path to the pip inside the venv)
+# apk add postgresql-client: install postgresql-client inside our alpine image
+# apk add tmp-build-deps: sets a virtual dependency package into tmp-build-deps, below this line is the list of packages we want to install for installing postgres adaptor
+# pip install line: install the list of requirements inside vitual env
+# if block: if dev is true, install the dev requirements list in venv
+# rm tmp line: remove the tmp directory becasue we don't want extra dependecies => keep the docer image lightweight
+# apk del: renove the packages in tmp-build-deps because they are only needed to install postgres adaptor not needed for development
+# adduser line: add a new user to docker image to avoid using the root user, no-create-home is bot to create a home directory => lightweight, django-user is the name of the user
 RUN python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
+    apk add --update --no-cache postgresql-client && \
+    apk add --update --no-cache --virtual .tmp-build-deps \
+        build-base postgresql-dev musl-dev && \
     /py/bin/pip install -r /tmp/requirements.txt && \
     if [ $DEV = "true" ]; \
         then /py/bin/pip install -r /tmp/requirements.dev.txt ; \
     fi && \
     rm -rf /tmp && \
+    apk del .tmp-build-deps && \
     adduser \
         --disabled-password \
         --no-create-home \
