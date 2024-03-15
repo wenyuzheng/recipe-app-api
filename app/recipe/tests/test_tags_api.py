@@ -20,6 +20,7 @@ def detail_url(tag_id):
     """Create and return a tag detail url."""
     return reverse('recipe:tag-detail', args=[tag_id])
 
+
 def create_user(email="user@example.com", password="testpass123"):
     """Create and return a new user."""
     return get_user_model().objects.create_user(email=email, password=password)
@@ -77,7 +78,7 @@ class PrivateTagAPITests(TestCase):
 
         payload = {'name': 'Dessert'}
         url = detail_url(tag.id)
-        res = self.client.patch(TAGS_URL, payload)
+        res = self.client.patch(url, payload)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         tag.refresh_from_db()
